@@ -246,7 +246,9 @@ public final class Authentication {
             "Content-Type": "text/x-xml-plist",
             "X-MMe-Client-Info": anisetteData.deviceDescription,
             "Accept": "*/*",
-            "User-Agent": "AuthKit/1 (Macintosh; OS X 26.6) (com.apple.dt.Xcode/26.0)",
+            // Matches the Android AuthKit client info above; the Mac/Xcode User-Agent gets
+            // rejected with GSA error -80045.
+            "User-Agent": "akd/1.0 CFNetwork/808.1.4",
             "Connection": "close"
         ]
         
@@ -308,7 +310,7 @@ public final class Authentication {
             "Accept": "application/x-buddyml",
             "Accept-Language": "en-us",
             "Content-Type": "application/x-plist",
-            "User-Agent": "Xcode",
+            "User-Agent": "akd/1.0 CFNetwork/808.1.4",
             "X-Apple-App-Info": "com.apple.gs.xcode.auth",
             "X-Xcode-Version": "27.0 (27A5218g)",
             "X-Apple-Identity-Token": encodedIdentityToken,
