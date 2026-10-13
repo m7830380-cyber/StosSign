@@ -297,6 +297,32 @@ public final class Authentication {
         return dictionary
     }
 
+    // isideload never hardcodes these two endpoints: it resolves them from the GrandSlam
+    // URL bag (same lookup used for the Mac client-info lie) under the keys
+    // "trustedDeviceSecondaryAuth" and "validateCode". Guessing fixed paths for these is a
+    // plausible real cause of -22411 on code submission.
+    public static func fetchURLBag() async throws -> [String: Any] {
+        let urlBagClientInfo = "<Mac15,7> <macOS;27.0;26A5378j> <com.apple.AuthKit/1 (com.apple.akd/1.0)>"
+        var request = URLRequest(url: URL(string: "https://gsa.apple.com/grandslam/GsService2/lookup")!)
+        request.addValue(urlBagClientInfo, forHTTPHeaderField: "X-Mme-Client-Info")
+        request.addValue("text/x-xml-plist", forHTTPHeaderField: "Accept")
+        request.addValue("akd/1.0 CFNetwork/808.1.4", forHTTPHeaderField: "User-Agent")
+        request.addValue("close", forHTTPHeaderField: "Connection")
+
+        let (data, _) = try await AppleAPI.shared.session.data(for: request)
+
+        guard let dictionary = try PropertyListSerialization.propertyList(
+            from: data,
+            format: nil
+        ) as? [String: Any],
+              let urls = dictionary["urls"] as? [String: Any]
+        else {
+            throw URLError(.badServerResponse)
+        }
+
+        return urls
+    }
+
     public static func makeTwoFactorCodeRequest(
         url: URL,
         dsid: String,
@@ -305,11 +331,15 @@ public final class Authentication {
     ) -> URLRequest {
         let identityToken = "\(dsid):\(idmsToken)"
         let encodedIdentityToken = identityToken.data(using: .utf8)?.base64EncodedString() ?? ""
-        
+
+        // isideload's base_headers() uses text/x-xml-plist for both Accept and Content-Type
+        // on every non-SMS GrandSlam request (including these). application/x-buddyml and
+        // application/x-plist, used here previously, never match that and are a plausible
+        // real cause of -22411 on code submission.
         let httpHeaders = [
-            "Accept": "application/x-buddyml",
+            "Accept": "text/x-xml-plist",
             "Accept-Language": "en-us",
-            "Content-Type": "application/x-plist",
+            "Content-Type": "text/x-xml-plist",
             // Apple's GSA edge blocks any request string containing com.apple.dt.Xcode;
             // report akd, the daemon that actually performs these requests on macOS.
             "User-Agent": "akd/1.0 CFNetwork/808.1.4",
@@ -379,9 +409,15 @@ public final class Authentication {
         anisetteData: AnisetteData,
         verificationHandler: @escaping (@escaping (String?) -> Void) async -> Void
     ) async throws {
-        let requestURL = URL(string: "https://gsa.apple.com/auth/verify/trusteddevice")!
-        let verifyURL = URL(string: "https://gsa.apple.com/grandslam/GsService2/validate")!
-        
+        let urlBag = try await fetchURLBag()
+        guard let requestURLString = urlBag["trustedDeviceSecondaryAuth"] as? String,
+              let verifyURLString = urlBag["validateCode"] as? String,
+              let requestURL = URL(string: requestURLString),
+              let verifyURL = URL(string: verifyURLString)
+        else {
+            throw URLError(.badServerResponse)
+        }
+
         let request = makeTwoFactorCodeRequest(
             url: requestURL,
             dsid: dsid,
