@@ -248,7 +248,7 @@ public final class Authentication {
             "Accept": "*/*",
             // Apple's GSA edge blocks any request string containing com.apple.dt.Xcode;
             // report akd, the daemon that actually performs these requests on macOS.
-            "User-Agent": "AuthKit/1 (Macintosh; OS X 26.6) (com.apple.akd/1.0)",
+            "User-Agent": "akd/1.0 CFNetwork/808.1.4",
             "Connection": "close"
         ]
         
