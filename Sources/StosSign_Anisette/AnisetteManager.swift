@@ -451,11 +451,16 @@ public final class AnisetteManager {
             throw AnisetteError.invalidAnisetteFormat
         }
         
-        if json["X-MMe-Client-Info"] != nil {
-            // Apple blocks the Mac/Xcode AuthKit client identifier on grandslam login, which surfaces
-            // as error -80045 ("This action cannot be completed at this time"). Android's AuthKit
-            // identifier is not blocked, so report that instead.
-            json["X-MMe-Client-Info"] = "<Pixel 7> <Android;14;UQ1A.240205.002> <com.apple.AuthKit/1 (com.apple.akd/1.0)>"
+        if let clientInfo = json["X-MMe-Client-Info"] {
+            // Apple's GSA edge returns an error (surfaced here as -80045, "This action cannot be
+            // completed at this time") for any request whose client info string names
+            // com.apple.dt.Xcode. akd, the daemon that actually performs these requests on macOS,
+            // is not blocked, so report that instead while keeping the real Mac device identifiers.
+            json["X-MMe-Client-Info"] = clientInfo.replacingOccurrences(
+                of: #"com\.apple\.dt\.Xcode/[0-9.]+"#,
+                with: "com.apple.akd/1.0",
+                options: .regularExpression
+            )
         }
         
         if v3 && json["result"] == "GetHeadersError" {
