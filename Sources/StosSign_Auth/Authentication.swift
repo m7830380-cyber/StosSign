@@ -313,6 +313,8 @@ public final class Authentication {
             // Apple's GSA edge blocks any request string containing com.apple.dt.Xcode;
             // report akd, the daemon that actually performs these requests on macOS.
             "User-Agent": "akd/1.0 CFNetwork/808.1.4",
+            "X-Apple-App-Info": "com.apple.gs.xcode.auth",
+            "X-Xcode-Version": "27.0 (27A5218g)",
             "X-Apple-Identity-Token": encodedIdentityToken,
             "X-Apple-I-MD-M": anisetteData.machineID,
             "X-Apple-I-MD": anisetteData.oneTimePassword,
