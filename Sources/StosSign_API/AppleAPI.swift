@@ -551,11 +551,9 @@ public final class AppleAPI: Sendable {
         
         let httpHeaders: [String: String] = [
             "Content-Type": "application/vnd.api+json",
-            "User-Agent": "Xcode",
+            "User-Agent": "akd/1.0 CFNetwork/808.1.4",
             "Accept": "application/vnd.api+json",
             "Accept-Language": "en-us",
-            "X-Apple-App-Info": "com.apple.gs.xcode.auth",
-            "X-Xcode-Version": "27.0 (27A5218g)",
             "X-HTTP-Method-Override": originalHTTPMethod ?? "",
             "X-Apple-I-Identity-Id": session.dsid,
             "X-Apple-GS-Token": session.authToken,
@@ -607,11 +605,9 @@ public final class AppleAPI: Sendable {
         
         let httpHeaders: [String: String] = [
             "Content-Type": json ? "application/vnd.api+json" : "text/x-xml-plist",
-            "User-Agent": "Xcode",
+            "User-Agent": "akd/1.0 CFNetwork/808.1.4",
             "Accept": json ? "application/json, text/plain, */*" : "text/x-xml-plist",
             "Accept-Language": "en-us",
-            "X-Apple-App-Info": "com.apple.gs.xcode.auth",
-            "X-Xcode-Version": "27.0 (27A5218g)",
             "X-Apple-I-Identity-Id": session.dsid,
             "X-Apple-GS-Token": session.authToken,
             "X-Apple-I-MD-M": session.anisetteData.machineID,
@@ -677,11 +673,9 @@ public final class AppleAPI: Sendable {
         
         let httpHeaders: [String: String] = [
             "Content-Type": "text/x-xml-plist",
-            "User-Agent": "Xcode",
+            "User-Agent": "akd/1.0 CFNetwork/808.1.4",
             "Accept": "text/x-xml-plist",
             "Accept-Language": "en-us",
-            "X-Apple-App-Info": "com.apple.gs.xcode.auth",
-            "X-Xcode-Version": "27.0 (27A5218g)",
             "X-Apple-I-Identity-Id": session.dsid,
             "X-Apple-GS-Token": session.authToken,
             "X-Apple-I-MD-M": session.anisetteData.machineID,
