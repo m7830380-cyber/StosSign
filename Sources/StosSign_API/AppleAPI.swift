@@ -567,9 +567,10 @@ public final class AppleAPI: Sendable {
             "X-MMe-Client-Info": session.anisetteData.deviceDescription,
             "X-Apple-I-Client-Time": session.anisetteData.date.iso8601(),
             "X-Apple-Locale": session.anisetteData.locale.identifier,
-            "X-Apple-I-TimeZone": session.anisetteData.timeZone.abbreviation() ?? ""
+            "X-Apple-I-TimeZone": session.anisetteData.timeZone.abbreviation() ?? "",
+            "Connection": "close"
         ]
-        
+
         httpHeaders.forEach { key, value in
             request.setValue(value, forHTTPHeaderField: key)
         }
@@ -623,15 +624,16 @@ public final class AppleAPI: Sendable {
             "X-Apple-I-Client-Time": session.anisetteData.date.iso8601(),
             "X-Apple-Locale": session.anisetteData.locale.identifier,
             "X-Apple-I-Locale": session.anisetteData.locale.identifier,
-            "X-Apple-I-TimeZone": session.anisetteData.timeZone.abbreviation() ?? "GMT"
+            "X-Apple-I-TimeZone": session.anisetteData.timeZone.abbreviation() ?? "GMT",
+            "Connection": "close"
         ]
-        
+
         for (key, value) in httpHeaders {
             request.setValue(value, forHTTPHeaderField: key)
         }
-        
+
         let (data, _) = try await self.session.data(for: request)
-        
+
         if json {
             guard let responseDictionary = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
                 throw AppleAPIError.badServerResponse
@@ -693,15 +695,16 @@ public final class AppleAPI: Sendable {
             "X-Apple-I-Client-Time": session.anisetteData.date.iso8601(),
             "X-Apple-Locale": session.anisetteData.locale.identifier,
             "X-Apple-I-Locale": session.anisetteData.locale.identifier,
-            "X-Apple-I-TimeZone": session.anisetteData.timeZone.abbreviation() ?? "GMT"
+            "X-Apple-I-TimeZone": session.anisetteData.timeZone.abbreviation() ?? "GMT",
+            "Connection": "close"
         ]
-        
+
         for (key, value) in httpHeaders {
             request.setValue(value, forHTTPHeaderField: key)
         }
-        
+
         let (data, _) = try await self.session.data(for: request)
-        
+
         guard let responseDictionary = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
             throw AppleAPIError.badServerResponse
         }
