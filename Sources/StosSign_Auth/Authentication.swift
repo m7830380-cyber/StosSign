@@ -246,7 +246,9 @@ public final class Authentication {
             "Content-Type": "text/x-xml-plist",
             "X-MMe-Client-Info": anisetteData.deviceDescription,
             "Accept": "*/*",
-            "User-Agent": "AuthKit/1 (Macintosh; OS X 26.6) (com.apple.dt.Xcode/26.0)",
+            // Apple's GSA edge blocks any request string containing com.apple.dt.Xcode;
+            // report akd, the daemon that actually performs these requests on macOS.
+            "User-Agent": "AuthKit/1 (Macintosh; OS X 26.6) (com.apple.akd/1.0)",
             "Connection": "close"
         ]
         
